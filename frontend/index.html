@@ -42,13 +42,14 @@
             font-weight: bold;
             color: var(--primary-color);
         }
-        nav a {
+        nav a, .new-post-btn {
             color: var(--text-color);
             text-decoration: none;
             margin-left: 1.5rem;
             transition: color 0.3s ease;
+            cursor: pointer;
         }
-        nav a:hover {
+        nav a:hover, .new-post-btn:hover {
             color: var(--primary-color);
         }
         main {
@@ -103,12 +104,39 @@
         .fade-in {
             animation: fadeIn 0.5s ease-out forwards;
         }
+        .new-post-form {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .new-post-form input,
+        .new-post-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+        }
+        .new-post-form button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .new-post-form button:hover {
+            background-color: #4a44c9;
+        }
         @media (max-width: 768px) {
             nav {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            nav a {
+            nav a, .new-post-btn {
                 margin-left: 0;
                 margin-top: 0.5rem;
             }
@@ -123,6 +151,7 @@
                 <div>
                     <a href="#" onclick="showHome()">Home</a>
                     <a href="#" onclick="showAbout()">About</a>
+                    <span class="new-post-btn" onclick="showNewPostForm()">➕ New Post</span>
                 </div>
             </nav>
         </div>
@@ -142,7 +171,7 @@
     </div>
 
     <script>
-        const posts = [
+        let posts = [
             {
                 title: "The Future of Decentralized Finance",
                 date: "2024-09-10",
@@ -180,6 +209,33 @@
                     <p>At CryptoBlog, we believe in the transformative power of blockchain technology and its potential to reshape industries and empower individuals. Our mission is to demystify complex concepts, provide thoughtful analysis, and keep you informed about the latest trends and developments in the crypto space.</p>
                 </div>
             `;
+        }
+
+        function showNewPostForm() {
+            const mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = `
+                <div class="new-post-form fade-in">
+                    <h2>Create a New Post</h2>
+                    <form onsubmit="createNewPost(event)">
+                        <input type="text" id="post-title" placeholder="Enter post title" required>
+                        <textarea id="post-content" placeholder="Enter post content" required></textarea>
+                        <button type="submit">Create Post</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        function createNewPost(event) {
+            event.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const newPost = {
+                title: title,
+                date: new Date().toISOString().split('T')[0],
+                content: content
+            };
+            posts.unshift(newPost);
+            showHome();
         }
 
         function updatePrices() {
