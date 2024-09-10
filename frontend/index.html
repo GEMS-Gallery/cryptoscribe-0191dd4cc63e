@@ -170,34 +170,25 @@
         </section>
     </div>
 
-    <script>
-        let posts = [
-            {
-                title: "The Future of Decentralized Finance",
-                date: "2024-09-10",
-                content: "Decentralized Finance (DeFi) is revolutionizing the way we think about financial systems. By leveraging blockchain technology, DeFi platforms are creating new opportunities for lending, borrowing, and earning interest without traditional intermediaries. As we look to the future, the potential for DeFi to reshape the global financial landscape becomes increasingly clear."
-            },
-            {
-                title: "Understanding Blockchain Scalability",
-                date: "2024-09-08",
-                content: "As blockchain networks grow in popularity, scalability becomes a critical issue. This post explores various solutions being developed to address blockchain scalability, including layer 2 solutions, sharding, and alternative consensus mechanisms. We'll dive into the technical challenges and the innovative approaches being taken to overcome them."
-            },
-            {
-                title: "The Impact of Crypto on Global Remittances",
-                date: "2024-09-05",
-                content: "Cryptocurrency is transforming the landscape of global remittances, offering faster and cheaper alternatives to traditional money transfer services. This post examines how crypto is being used for cross-border payments and its potential to improve financial inclusion. We'll look at real-world examples and the challenges that need to be overcome."
-            }
-        ];
+    <script type="module">
+        import { backend } from '/declarations/backend';
 
-        function showHome() {
+        async function showHome() {
             const mainContent = document.getElementById('main-content');
-            mainContent.innerHTML = posts.map((post, index) => `
-                <article class="post fade-in" style="animation-delay: ${index * 0.2}s">
-                    <h2>${post.title}</h2>
-                    <div class="post-meta">Published on ${post.date}</div>
-                    <p>${post.content}</p>
-                </article>
-            `).join('');
+            mainContent.innerHTML = '<p>Loading posts...</p>';
+            try {
+                const posts = await backend.getPosts();
+                mainContent.innerHTML = posts.map((post, index) => `
+                    <article class="post fade-in" style="animation-delay: ${index * 0.2}s">
+                        <h2>${post.title}</h2>
+                        <div class="post-meta">Published on ${post.date}</div>
+                        <p>${post.content}</p>
+                    </article>
+                `).join('');
+            } catch (error) {
+                mainContent.innerHTML = '<p>Error loading posts. Please try again later.</p>';
+                console.error('Error fetching posts:', error);
+            }
         }
 
         function showAbout() {
@@ -225,17 +216,18 @@
             `;
         }
 
-        function createNewPost(event) {
+        async function createNewPost(event) {
             event.preventDefault();
             const title = document.getElementById('post-title').value;
             const content = document.getElementById('post-content').value;
-            const newPost = {
-                title: title,
-                date: new Date().toISOString().split('T')[0],
-                content: content
-            };
-            posts.unshift(newPost);
-            showHome();
+            const date = new Date().toISOString().split('T')[0];
+            try {
+                await backend.createPost(title, content, date);
+                showHome();
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Failed to create post. Please try again.');
+            }
         }
 
         function updatePrices() {
@@ -257,6 +249,11 @@
         showHome();
         updatePrices();
         setInterval(updatePrices, 60000);
+
+        window.showHome = showHome;
+        window.showAbout = showAbout;
+        window.showNewPostForm = showNewPostForm;
+        window.createNewPost = createNewPost;
     </script>
 </body>
 </html>

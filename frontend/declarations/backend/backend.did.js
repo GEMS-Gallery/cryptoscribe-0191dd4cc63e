@@ -3,9 +3,8 @@ export const idlFactory = ({ IDL }) => {
   const Post = IDL.Record({
     'id' : IDL.Nat,
     'title' : IDL.Text,
-    'body' : IDL.Text,
-    'author' : IDL.Text,
-    'timestamp' : IDL.Int,
+    'content' : IDL.Text,
+    'date' : IDL.Text,
   });
   return IDL.Service({
     'createPost' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [Result], []),

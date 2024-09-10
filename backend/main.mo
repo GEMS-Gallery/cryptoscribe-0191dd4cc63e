@@ -13,36 +13,30 @@ actor {
   type Post = {
     id: Nat;
     title: Text;
-    body: Text;
-    author: Text;
-    timestamp: Int;
+    content: Text;
+    date: Text;
   };
 
   stable var nextPostId: Nat = 0;
-  stable var posts: [(Nat, Post)] = [];
+  stable var posts: [Post] = [];
 
-  public func createPost(title: Text, body: Text, author: Text): async Result.Result<Nat, Text> {
+  public func createPost(title: Text, content: Text, date: Text): async Result.Result<Nat, Text> {
     let post: Post = {
       id = nextPostId;
       title = title;
-      body = body;
-      author = author;
-      timestamp = Time.now();
+      content = content;
+      date = date;
     };
-    posts := Array.append([(nextPostId, post)], posts);
+    posts := Array.append([post], posts);
     nextPostId += 1;
     #ok(post.id)
   };
 
   public query func getPosts(): async [Post] {
-    Array.map(posts, func((_, post): (Nat, Post)): Post { post })
+    posts
   };
 
   public query func getPost(id: Nat): async ?Post {
-    let result = Array.find(posts, func((postId, _): (Nat, Post)): Bool { postId == id });
-    switch (result) {
-      case (null) { null };
-      case (?(_, post)) { ?post };
-    }
+    Array.find(posts, func(post: Post): Bool { post.id == id })
   };
 }
