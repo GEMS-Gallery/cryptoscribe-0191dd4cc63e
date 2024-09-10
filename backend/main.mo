@@ -1,5 +1,3 @@
-import Bool "mo:base/Bool";
-
 import Array "mo:base/Array";
 import List "mo:base/List";
 import Time "mo:base/Time";
@@ -11,32 +9,34 @@ import Option "mo:base/Option";
 
 actor {
   type Post = {
-    id: Nat;
     title: Text;
-    content: Text;
     date: Text;
+    content: Text;
   };
 
-  stable var nextPostId: Nat = 0;
-  stable var posts: [Post] = [];
-
-  public func createPost(title: Text, content: Text, date: Text): async Result.Result<Nat, Text> {
-    let post: Post = {
-      id = nextPostId;
-      title = title;
-      content = content;
-      date = date;
-    };
-    posts := Array.append([post], posts);
-    nextPostId += 1;
-    #ok(post.id)
-  };
+  stable var posts: [Post] = [
+    {
+      title = "The Art of Social Engineering";
+      date = "2024-09-10";
+      content = "Social engineering remains one of the most effective hacking techniques. This post explores the psychology behind successful social engineering attacks and how to protect yourself and your organization from falling victim to these sophisticated manipulations.";
+    },
+    {
+      title = "Exploring the Dark Web: Risks and Precautions";
+      date = "2024-09-08";
+      content = "The dark web is often misunderstood and sensationalized. In this post, we'll demystify the dark web, discuss its legitimate uses, and outline the precautions you should take if you decide to explore this hidden part of the internet.";
+    },
+    {
+      title = "Ethical Hacking: Protecting Systems by Breaking Them";
+      date = "2024-09-05";
+      content = "Ethical hacking plays a crucial role in cybersecurity. We'll delve into the world of white hat hackers, exploring their methodologies, tools, and the vital role they play in securing systems and networks against malicious attacks.";
+    }
+  ];
 
   public query func getPosts(): async [Post] {
     posts
   };
 
-  public query func getPost(id: Nat): async ?Post {
-    Array.find(posts, func(post: Post): Bool { post.id == id })
+  public func addPost(newPost: Post): async () {
+    posts := Array.append([newPost], posts);
   };
 }
