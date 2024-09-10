@@ -49,18 +49,19 @@
         .logo svg {
             margin-right: 0.5rem;
         }
-        nav a {
+        nav a, .new-post-btn {
             color: var(--text-color);
             text-decoration: none;
             margin-left: 1.5rem;
             transition: color 0.3s ease;
             display: flex;
             align-items: center;
+            cursor: pointer;
         }
-        nav a:hover {
+        nav a:hover, .new-post-btn:hover {
             color: var(--accent-color);
         }
-        nav a svg {
+        nav a svg, .new-post-btn svg {
             margin-right: 0.5rem;
         }
         main {
@@ -149,12 +150,42 @@
         .glitch {
             animation: glitch 1s infinite;
         }
+        .new-post-form {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 255, 157, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--accent-color);
+        }
+        .new-post-form input,
+        .new-post-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            background-color: var(--background-color);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+        }
+        .new-post-form button {
+            background-color: var(--accent-color);
+            color: var(--background-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: background-color 0.3s ease;
+        }
+        .new-post-form button:hover {
+            background-color: var(--secondary-color);
+        }
         @media (max-width: 768px) {
             nav {
                 flex-direction: column;
                 align-items: flex-start;
             }
-            nav a {
+            nav a, .new-post-btn {
                 margin-left: 0;
                 margin-top: 0.5rem;
             }
@@ -178,6 +209,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                         About
                     </a>
+                    <span class="new-post-btn" onclick="showNewPostForm()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        New Post
+                    </span>
                 </div>
             </nav>
         </div>
@@ -234,6 +269,34 @@
             `;
         }
 
+        function showNewPostForm() {
+            const mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = `
+                <div class="new-post-form">
+                    <h2>Create a New Post</h2>
+                    <form onsubmit="createNewPost(event)">
+                        <input type="text" id="post-title" placeholder="Enter post title" required>
+                        <textarea id="post-content" placeholder="Enter post content" required></textarea>
+                        <button type="submit">Create Post</button>
+                    </form>
+                </div>
+            `;
+        }
+
+        async function createNewPost(event) {
+            event.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const date = new Date().toISOString().split('T')[0];
+            try {
+                await backend.addPost({ title, content, date });
+                showHome();
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Failed to create post. Please try again.');
+            }
+        }
+
         function updateFeed() {
             const feedItems = [
                 "New zero-day vulnerability discovered in popular CMS",
@@ -258,6 +321,8 @@
 
         window.showHome = showHome;
         window.showAbout = showAbout;
+        window.showNewPostForm = showNewPostForm;
+        window.createNewPost = createNewPost;
     </script>
 </body>
 </html>
